@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+
+
+package dfs;
+// Interface exported by server
+service DFS
+{
+    rpc connectServer(ClientAddress) returns(ClientID) {}
+
+    // check if valid    
+    rpc pullInvalidation(FileRequest) returns(Invalidation) {}
+
+    // read file add it cache and acquire lock set valid
+    rpc readFile(FileRequest) returns(FileHandle) {}
+    // read lock
+    rpc acquireReadLock(Filename) returns(Response) {}
+    rpc releaseReadLock(Filename) returns(Response) {}
+
+    // get write lock and file data set valid, set others invalid
+    rpc	getFileDataToWrite(FileRequest) returns(FileHandle) {}
+    
+    // get write lock and set valid other invalid
+    rpc acquireWriteLock(FileRequest) returns(Response) {}
+    // write into cache and server
+    rpc writeFileAndReleaseLock(FileHandle) returns(Response) {}
+    rpc createFile(FileHandle) returns(Response) {}
+    rpc deleteFile(Filename) returns(Response) {}
+    rpc list(DirectoryPath) returns (FileList) {}
+
+    
+    
+}
+message FileList
+{
+	string filelist = 1;
+}
+message FileRequest
+{
+    int32 id = 1;
+    string fname = 2;
+}
+message ClientID
+{
+    int32 id = 1;
+}
+
+message Invalidation
+{
+	int32 is_valid = 1;
+}
+
+message Response
+{
+	int32 success = 1;
+}
+
+message Filename
+{
+	string fname = 1;
+}
+
+message FileHandle
+{
+	string fname = 1;
+	string buffer = 2;
+	int32 access = 3;
+}
+
+message ClientAddress
+{
+	string ip_address = 1;
+	int32 port = 2;
+}
+message DirectoryPath
+{
+	string path = 1;
+}
